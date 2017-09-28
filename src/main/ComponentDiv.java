@@ -267,6 +267,6 @@ public class ComponentDiv
 	
 	private String getNextDefaultComponentName()
 	{
-		return SGUIU.defaultComponentName+order;
+		return GUIU.defaultComponentName+order;
 	}
 }
