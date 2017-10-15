@@ -1,6 +1,6 @@
-package main;
+package firok;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -12,26 +12,28 @@ public class ComponentDiv
 {
 	private int order;
 	String name;
-	private Map<String,Component> components;
+	private HashMap<String,Component> components;
 	private int x,y; // 块整体位置
 	
 	public ComponentDiv()
 	{
 		order=0;
 		name="default name";
+		components=new HashMap<String,Component>();
 	}
 	public ComponentDiv(String nameIn)
 	{
 		order=0;
 		name=nameIn;
+		components=new HashMap<String,Component>();
 	}
 	
 	// 为div添加一个组件
-	protected void registerComponent(String nameIn,JComponent jcomponentIn)
+	public void registerComponent(String nameIn,JComponent jcomponentIn)
 	{
 		registerComponent(nameIn,jcomponentIn,0,0);
 	}
-	protected void registerComponent(String nameIn,JComponent jcomponentIn,int xIn,int yIn)
+	public void registerComponent(String nameIn,JComponent jcomponentIn,int xIn,int yIn)
 	{
 		jcomponentIn.setLocation(this.x+xIn, this.y+yIn);
 		
@@ -39,11 +41,11 @@ public class ComponentDiv
 		components.put(nameIn, temp_component);
 		order++;
 	}
-	protected void registerComponent(JComponent jcomponentIn)
+	public void registerComponent(JComponent jcomponentIn)
 	{
 		registerComponent(getNextDefaultComponentName(),jcomponentIn,0,0);
 	}
-	protected void registerComponent(JComponent jcomponentIn,int xIn,int yIn)
+	public void registerComponent(JComponent jcomponentIn,int xIn,int yIn)
 	{
 		registerComponent(getNextDefaultComponentName(),jcomponentIn,xIn,yIn);
 	}
@@ -66,69 +68,78 @@ public class ComponentDiv
 	}
 	
 	// 位置相关操作
-	public long getDivPosX()
+	public int getDivPosX()
 	{
 		return x;
 	}
-	public long getDivPosY()
+	public int getDivPosY()
 	{
 		return y;
 	}
-	public long getComponentPosX(String nameIn)
+	public int getComponentPosX(String nameIn)
 	{
 		return 0;
 	}
-	public long getComponentPosY(String nameIn)
+	public int getComponentPosY(String nameIn)
 	{
 		return 0;
 	}
 	
 	public void setDivPosX(int xIn)
 	{
-		;
+		setDivPos(xIn,0);
 	}
 	public void setDivPosY(int yIn)
 	{
-		;
+		setDivPos(0,yIn);
 	}
 	public void setDivPos(int xIn,int yIn)
 	{
-		;
+		int old_x=getDivPosX();
+		int old_y=getDivPosY();
+		
+		moveDivPos(xIn-old_x,yIn-old_y);
 	}
 	public void setComponentPosX(int xIn)
 	{
-		;
+		setComponentPos(xIn,0);
 	}
 	public void setComponentPosY(int yIn)
 	{
-		;
+		setComponentPos(0,yIn);
 	}
 	public void setComponentPos(int xIn,int yIn)
 	{
-		;
+		System.out.println("没有实现这个功能");
 	}
 	
 	public void moveDivPosX(int xIn)
 	{
-		;
+		moveDivPos(xIn,0);
 	}
 	public void moveDivPosY(int yIn)
 	{
-		;
+		moveDivPos(0,yIn);
 	}
 	public void moveDivPos(int xIn,int yIn)
 	{
-		;
+		x+=xIn;
+		y+=yIn;
+		
+		for(Component component:components.values())
+		{
+			component.movePos(xIn, yIn);
+		}
 	}
-	public void moveComponentPosX(int xIn)
+	public void moveComponentPosX(String componentNameIn,int xIn)
 	{
-		;
+		moveComponentPos(componentNameIn,xIn,0);
 	}
-	public void moveComponentPosY(int yIn)
+	public void moveComponentPosY(String componentNameIn,int yIn)
 	{
-		;
+		moveComponentPos(componentNameIn,0,yIn);
 	}
-	public void moveComponentPos(int xIn,int yIn)
+	public void moveComponentPos(String componentNameIn,int xIn,int yIn)
 	{
 		;
 	}
@@ -149,11 +160,16 @@ public class ComponentDiv
 	}
 	public void setDivEnable(boolean enableIn)
 	{
-		;
+		for(Component temp_component:components.values())
+		{
+			temp_component.setEnable(enableIn);;
+		}
 	}
 	public void setComponentEnable(String componentNameIn,boolean enableIn)
 	{
-		;
+		JComponent component=getComponent(componentNameIn);
+		if(component!=null)
+			component.setEnabled(enableIn);
 	}
 	
 	public void setDivFont(Font fontIn)
@@ -163,9 +179,11 @@ public class ComponentDiv
 			temp_component.getComponent().setFont(fontIn);
 		}
 	}
-	public void setComponentFont(Font fontIn)
+	public void setComponentFont(String componentNameIn,Font fontIn)
 	{
-		;
+		JComponent component=getComponent(componentNameIn);
+		if(component!=null)
+			component.setFont(fontIn);
 	}
 	
 	protected class Component
@@ -262,6 +280,11 @@ public class ComponentDiv
 		public void setVisible(boolean visibleIn)
 		{
 			component.setVisible(visibleIn);
+		}
+		
+		public void setEnable(boolean enableIn)
+		{
+			component.setEnabled(enableIn);
 		}
 	}
 	
